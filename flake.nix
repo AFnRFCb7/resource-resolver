@@ -131,7 +131,7 @@
                                                         [
                                                             (
                                                                 let
-                                                                    observed = builtins.toString ( implementation ( channel = channel ; quarantine-directory = quarantine-directory ; ) ) ;
+                                                                    observed = builtins.toString ( implementation { channel = channel ; quarantine-directory = quarantine-directory ; } ) ;
                                                                     if expected == observed then
                                                                         pkgs.writeShellApplication
                                                                             {
