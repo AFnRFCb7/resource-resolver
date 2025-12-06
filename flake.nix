@@ -27,7 +27,14 @@
                                                                         pkgs.writeShellApplication
                                                                             {
                                                                                 name = "resolve" ;
-                                                                                runtimeInputs = [ pkgs.coreutils pkgs.jq pkgs.redis failure ] ;
+                                                                                runtimeInputs =
+                                                                                    [
+                                                                                        pkgs.coreutils
+                                                                                        pkgs.jq
+                                                                                        pkgs.redis
+                                                                                        pkgs.yq
+                                                                                        failure
+                                                                                    ] ;
                                                                                 text =
                                                                                     ''
                                                                                         ARGUMENTS=( "$@" )
