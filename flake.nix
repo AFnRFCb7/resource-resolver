@@ -18,7 +18,7 @@
                                             pkgs.writeShellApplication
                                                 {
                                                     name = "resource-resolver" ;
-                                                    runtimeInputs = [ pkgs.coreutils pkgs.gettext pkgs.redis ] ;
+                                                    runtimeInputs = [ pkgs.coreutils pkgs.gettext pkgs.jq pkgs.redis pkgs.yq-go failure ] ;
                                                     text =
                                                         let
                                                             resolve =
