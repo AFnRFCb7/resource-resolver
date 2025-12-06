@@ -132,29 +132,30 @@
                                                             (
                                                                 let
                                                                     observed = builtins.toString ( implementation { channel = channel ; quarantine-directory = quarantine-directory ; } ) ;
-                                                                    if expected == observed then
-                                                                        pkgs.writeShellApplication
-                                                                            {
-                                                                                name = "execute-test" ;
-                                                                                runtimeInputs = [ pkgs.coreutils ] ;
-                                                                                text =
-                                                                                    ''
-                                                                                        OUT="$1"
-                                                                                        touch "$OUT"
-                                                                                    '' ;
-                                                                            }
-                                                                    else
-                                                                        pkgs.writeShellApplication
-                                                                            {
-                                                                                name = "execute-test" ;
-                                                                                runtimeInputs = [ pkgs.coreutils failure ] ;
-                                                                                text =
-                                                                                    ''
-                                                                                        OUT="$1"
-                                                                                        touch "$OUT"
-                                                                                        failure 33c629b1 "We were expecting ${ expected } but we observed ${ observed }"
-                                                                                    '' ;
-                                                                            }
+                                                                    in
+                                                                        if expected == observed then
+                                                                            pkgs.writeShellApplication
+                                                                                {
+                                                                                    name = "execute-test" ;
+                                                                                    runtimeInputs = [ pkgs.coreutils ] ;
+                                                                                    text =
+                                                                                        ''
+                                                                                            OUT="$1"
+                                                                                            touch "$OUT"
+                                                                                        '' ;
+                                                                                }
+                                                                        else
+                                                                            pkgs.writeShellApplication
+                                                                                {
+                                                                                    name = "execute-test" ;
+                                                                                    runtimeInputs = [ pkgs.coreutils failure ] ;
+                                                                                    text =
+                                                                                        ''
+                                                                                            OUT="$1"
+                                                                                            touch "$OUT"
+                                                                                            failure 33c629b1 "We were expecting ${ expected } but we observed ${ observed }"
+                                                                                        '' ;
+                                                                                }
                                                             )
                                                         ] ;
                                                     src = ./. ;
