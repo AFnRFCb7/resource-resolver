@@ -65,7 +65,7 @@
                                                                                                 }
                                                                                             '
                                                                                     )" || failure 7a875425
-                                                                                    redis-cli PUBLISH ${ config.personal.channel } "$JSON" > /dev/null
+                                                                                    redis-cli PUBLISH ${ channel } "$JSON" > /dev/null
                                                                                     yq eval --prettyPrint "." - <<< "$JSON"
                                                                                     rm --force "${ quarantine-directory }/$INDEX/init/resolve.sh"
                                                                                     rm --recursive --force "${ quarantine-directory }/$INDEX/init/resolve"
