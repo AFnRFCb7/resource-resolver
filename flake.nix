@@ -32,7 +32,7 @@
                                                                                         pkgs.coreutils
                                                                                         pkgs.jq
                                                                                         pkgs.redis
-                                                                                        pkgs.yq
+                                                                                        pkgs.yq-go
                                                                                         failure
                                                                                     ] ;
                                                                                 text =
