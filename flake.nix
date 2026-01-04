@@ -146,7 +146,7 @@
                                         {
                                             channel ? "eff208cc" ,
                                             description ? "56d7c73f" ,
-                                            enable ? "83644922"
+                                            enable ? "83644922" ,
                                             expected ,
                                             quarantine-directory ? "b5f8cc19" ,
                                             user ? "6389c423"
