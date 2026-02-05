@@ -116,7 +116,6 @@
                                                                                 MODE=false RESOLUTION=init envsubst < "${ resolve }" > "${ quarantine-directory }/$INDEX/init.sh"
                                                                                 chmod 0500 "${ quarantine-directory }/$INDEX/init.sh"
                                                                                 yq eval '.description.secondary.seed.resolutions.init // [] | .[]' - <<< "$PAYLOAD" | while IFS= read -r RESOLUTION
-                                                                                yq eval '.description.secondary.seed.resolutions.init // [] | .[]' - <<< "$PAYLOAD" | while IFS= read -r RESOLUTION
                                                                                 do
                                                                                     export MODE=true
                                                                                     export RESOLUTION
