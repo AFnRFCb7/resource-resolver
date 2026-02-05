@@ -37,6 +37,7 @@
                                                                                     ] ;
                                                                                 text =
                                                                                     ''
+                                                                                        echo c692a789
                                                                                         ARGUMENTS=( "$@" )
                                                                                         # shellcheck disable=SC2034
                                                                                         ARGUMENTS_JSON="$( printf '%s\n' "${ builtins.concatStringsSep "" [ "$" "{" "ARGUMENTS[@]" "}" ] }" | jq -R . | jq -s . )" || failure 61a8398a
@@ -87,9 +88,12 @@
                                                                         read -r TYPE || failure 76c840d6
                                                                         read -r CHANNEL || failure 0702dae0
                                                                         read -r PAYLOAD || failure 3280f3d7
+                                                                        echo b0fcf4a3
+                                                                        echo "TYPE=$TYPE CHANNEL=$CHANNEL"
                                                                         if [[ "$TYPE" == "message" ]] && [[ "${ channel }" == "$CHANNEL" ]]
                                                                         then
                                                                             TYPE_="$( jq --raw-output ".type" - <<< "$PAYLOAD" )" || failure 1dc13b8d
+                                                                            echo "TYPE=TYPE_"
                                                                             if [[ "invalid" == "$TYPE_" ]]
                                                                             then
                                                                                 INDEX="$( yq eval ".index | tostring " - <<< "$PAYLOAD" )" || failure 45ac1a52
@@ -106,6 +110,7 @@
                                                                                 export RELEASE_RESOLUTIONS_JSON
                                                                                 export STANDARD_INPUT="\$STANDARD_INPUT"
                                                                                 export TYPE="resolve-init"
+                                                                                echo 2e72d2a8
                                                                                 yq eval --prettyPrint '.' - <<< "$PAYLOAD" > "${ quarantine-directory }/$INDEX/init.yaml"
                                                                                 chmod 0400 "${ quarantine-directory }/$INDEX/init.yaml"
                                                                                 MODE=false RESOLUTION=init envsubst < "${ resolve }" > "${ quarantine-directory }/$INDEX/init.sh"
