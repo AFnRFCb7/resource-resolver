@@ -67,12 +67,14 @@
                                                                                                                     --null-input \
                                                                                                                     --compact-output \
                                                                                                                     --argjson ARGUMENTS "$ARGUMENTS_JSON" \
+                                                                                                                    --arg HASH "$HASH" \
                                                                                                                     --arg HAS_STANDARD_INPUT "$HAS_STANDARD_INPUT" \
                                                                                                                     --argjson RELEASE_RESOLUTIONS '$RELEASE_RESOLUTIONS_JSON' \
                                                                                                                     --arg STANDARD_INPUT "$STANDARD_INPUT" \
                                                                                                                     '
                                                                                                                         {
                                                                                                                             "arguments" : $ARGUMENTS ,
+                                                                                                                            "hash" : $HASH ,
                                                                                                                             "has-standard-input" : ( $HAS_STANDARD_INPUT | test("true") ) ,
                                                                                                                             "index" : "$INDEX" ,
                                                                                                                             "mode" : ( "$MODE" | test("true") ) ,
@@ -97,8 +99,12 @@
                                                                                         while [[ "$#" -gt 0 ]]
                                                                                         do
                                                                                             case "$1" in
+                                                                                                --hash)
+                                                                                                    export HASH="$2"
+                                                                                                    shift 2
+                                                                                                    ;;
                                                                                                 --index)
-                                                                                                    INDEX="$2"
+                                                                                                    export INDEX="$2"
                                                                                                     shift 2
                                                                                                     ;;
                                                                                                 --resolution)
@@ -106,8 +112,8 @@
                                                                                                     shift 2
                                                                                                     ;;
                                                                                                 --type)
-                                                                                                    TYPE="$2"
-                                                                                                    if [[ "$TYPE" != "invalid-init" ]] && [[ "$TYPE" != "invalid-release" ]]
+                                                                                                    INPUT_TYPE="$2"
+                                                                                                    if [[ "$TYPE" != "init" ]] && [[ "$TYPE" != "release" ]]
                                                                                                     then
                                                                                                         failure 193f44e0
                                                                                                     fi
@@ -119,6 +125,10 @@
                                                                                                     ;;
                                                                                             esac
                                                                                         done
+                                                                                        if [[ -z "$HASH" ]]
+                                                                                        then
+                                                                                            failure 25c50e39
+                                                                                        fi
                                                                                         if [[ -z "$INDEX" ]]
                                                                                         then
                                                                                             failure 25b5e484
@@ -127,12 +137,14 @@
                                                                                         then
                                                                                             failure d789f6bc
                                                                                         fi
+                                                                                        INPUT_TYPE="invalid-$TYPE"
+                                                                                        OUTPUT_TYPE="resolve-$TYPE"
                                                                                         mkdir --parents "${ quarantine-directory }/$INDEX/$TYPE"
-                                                                                        MODE=false envsubst < ${ resolve } > "${ quarantine-directory }/$INDEX/$TYPE.sh"
+                                                                                        MODE=false TYPE="$OUTPUT_TYPE" envsubst < ${ resolve } > "${ quarantine-directory }/$INDEX/$TYPE.sh"
                                                                                         chmod 0500 "${ quarantine-directory }/$INDEX/$TYPE.sh"
                                                                                         for RESOLUTION in "${ builtins.concatStringsSep "" [ "$" "{" "RESOLUTIONS[@]" "}" ] }"
                                                                                         do
-                                                                                            MODE=true RESOLUTION=$RESOLUTION envsubst < ${ resolve } > "${ quarantine-directory }/$INDEX/$TYPE/$RESOLUTION"
+                                                                                            MODE=true RESOLUTION=$RESOLUTION TYPE="$OUTPUT_TYPE" envsubst < ${ resolve } > "${ quarantine-directory }/$INDEX/$TYPE/$RESOLUTION"
                                                                                             chmod 0500 "${ quarantine-directory }/$INDEX/$TYPE/$TYPE"
                                                                                         done
                                                                                         cat | yq eval --prettyPrint '.' > "${ quarantine-directory }/$INDEX/$TYPE.yaml"
@@ -156,6 +168,7 @@
                                                                             TYPE_="$( jq --raw-output ".type" - <<< "$PAYLOAD" )" || failure 1dc13b8d
                                                                             if [[ "invalid-init" == "$TYPE_" ]]
                                                                             then
+                                                                                HASH="$( yq eval ".index | tostring " - <<< "$PAYLOAD" )" || failure 45ac1a52
                                                                                 INDEX="$( yq eval ".index | tostring " - <<< "$PAYLOAD" )" || failure 45ac1a52
                                                                                 mapfile -t RESOLUTIONS < <(
                                                                                     yq -r '.description.secondary.seed.resolutions.init // [] | .[]' <<< "$PAYLOAD"
@@ -177,7 +190,7 @@
                                                                                 do
                                                                                     RESOLUTION_ARGS+=( --resolution "$r" )
                                                                                 done
-                                                                                echo "$PAYLOAD" | iteration --type init --index "$INDEX" "${ builtins.concatStringsSep "" [ "$" "{" "RESOLUTION_ARGS[@]" "}" ] }" &
+                                                                                echo "$PAYLOAD" | iteration --type release --index "$INDEX" "${ builtins.concatStringsSep "" [ "$" "{" "RESOLUTION_ARGS[@]" "}" ] }" &
                                                                             else
                                                                                 echo "releaser ignores $TYPE_"
                                                                             fi
