@@ -154,7 +154,7 @@
                                                                         if [[ "$TYPE" == "message" ]] && [[ "${ channel }" == "$CHANNEL" ]]
                                                                         then
                                                                             TYPE_="$( jq --raw-output ".type" - <<< "$PAYLOAD" )" || failure 1dc13b8d
-                                                                            if [[ "invalid-init" == "$TYPE_" ]] || [[ "invalid-release" == "$TYPE_" ]]
+                                                                            if [[ "invalid-init" == "$TYPE_" ]]
                                                                             then
                                                                                 INDEX="$( yq eval ".index | tostring " - <<< "$PAYLOAD" )" || failure 45ac1a52
                                                                                 mapfile -t RESOLUTIONS < <(
@@ -165,7 +165,19 @@
                                                                                 do
                                                                                     RESOLUTION_ARGS+=( --resolution "$r" )
                                                                                 done
-                                                                                echo "$PAYLOAD" | iteration --type "$TYPE_" --index "$INDEX" "${ builtins.concatStringsSep "" [ "$" "{" "RESOLUTION_ARGS[@]" "}" ] }" &
+                                                                                echo "$PAYLOAD" | iteration --type init --index "$INDEX" "${ builtins.concatStringsSep "" [ "$" "{" "RESOLUTION_ARGS[@]" "}" ] }" &
+                                                                            elif [[ "invalid-release" == "$TYPE_" ]]
+                                                                            then
+                                                                                INDEX="$( yq eval ".index | tostring " - <<< "$PAYLOAD" )" || failure 78cd492b
+                                                                                mapfile -t RESOLUTIONS < <(
+                                                                                    yq -r '.resolutions // [] | .[]' <<< "$PAYLOAD"
+                                                                                )
+                                                                                RESOLUTION_ARGS=()
+                                                                                for r in "${ builtins.concatStringsSep "" [ "$" "{" "RESOLUTIONS[@]" "}" ] }"
+                                                                                do
+                                                                                    RESOLUTION_ARGS+=( --resolution "$r" )
+                                                                                done
+                                                                                echo "$PAYLOAD" | iteration --type init --index "$INDEX" "${ builtins.concatStringsSep "" [ "$" "{" "RESOLUTION_ARGS[@]" "}" ] }" &
                                                                             else
                                                                                 echo "releaser ignores $TYPE_"
                                                                             fi
