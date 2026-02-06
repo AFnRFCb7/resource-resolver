@@ -133,7 +133,7 @@
                                                                                         for RESOLUTION in "${ builtins.concatStringsSep "" [ "$" "{" "RESOLUTIONS[@]" "}" ] }"
                                                                                         do
                                                                                             MODE=true RESOLUTION=$RESOLUTION envsubst < ${ resolve } > "${ quarantine-directory }/$INDEX/$TYPE/$RESOLUTION"
-                                                                                            chmod 0500 "${ quarantine-directory }/$INDEX/$TYPE/$TYPE.sh"
+                                                                                            chmod 0500 "${ quarantine-directory }/$INDEX/$TYPE/$TYPE"
                                                                                         done
                                                                                         echo 65907cbe
                                                                                         cat | yq eval --prettyPrint '.' > "${ quarantine-directory }/$INDEX/$TYPE.yaml"
