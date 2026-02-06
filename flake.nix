@@ -149,7 +149,7 @@
                                                                         if [[ "$TYPE" == "message" ]] && [[ "${ channel }" == "$CHANNEL" ]]
                                                                         then
                                                                             TYPE_="$( jq --raw-output ".type" - <<< "$PAYLOAD" )" || failure 1dc13b8d
-                                                                            if [[ "invalid" == "$TYPE_" ]]
+                                                                            if [[ "invalid-init" == "$TYPE_" ]]
                                                                             then
                                                                                 INDEX="$( yq eval ".index | tostring " - <<< "$PAYLOAD" )" || failure 45ac1a52
                                                                                 RELEASE="$( yq eval ".description.secondary.seed.release" - <<< "$PAYLOAD" )" || failure 8cdca9f1
