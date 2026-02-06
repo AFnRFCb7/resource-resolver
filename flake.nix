@@ -190,6 +190,7 @@
                                                                                 do
                                                                                     RESOLUTION_ARGS+=( --resolution "$r" )
                                                                                 done
+                                                                                echo "$PAYLOAD" iteration --type release --index "$INDEX" --hash "$HASH" "${ builtins.concatStringsSep "" [ "$" "{" "RESOLUTION_ARGS[@]" "}" ] }" &
                                                                                 echo "$PAYLOAD" | iteration --type release --index "$INDEX" --hash "$HASH" "${ builtins.concatStringsSep "" [ "$" "{" "RESOLUTION_ARGS[@]" "}" ] }" &
                                                                             else
                                                                                 echo "releaser ignores $TYPE_"
