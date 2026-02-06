@@ -136,6 +136,7 @@
                                                                                             chmod 0500 "${ quarantine-directory }/$INDEX/$TYPE/$TYPE"
                                                                                         done
                                                                                         cat | yq eval --prettyPrint '.' > "${ quarantine-directory }/$INDEX/$TYPE.yaml"
+                                                                                        chmod 0400 "${ quarantine-directory }/$INDEX/$TYPE.yaml"
                                                                                     '' ;
                                                                     }
                                                             )
