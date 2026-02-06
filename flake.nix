@@ -101,10 +101,6 @@
                                                                                                     INDEX="$2"
                                                                                                     shift 2
                                                                                                     ;;
-                                                                                                --release)
-                                                                                                    RELEASE="$2"
-                                                                                                    shift 2
-                                                                                                    ;;
                                                                                                 --resolution)
                                                                                                     RESOLUTIONS+=( "$2" )"
                                                                                                     shift 2
@@ -160,7 +156,6 @@
                                                                             if [[ "invalid-init" == "$TYPE_" ]]
                                                                             then
                                                                                 INDEX="$( yq eval ".index | tostring " - <<< "$PAYLOAD" )" || failure 45ac1a52
-                                                                                RELEASE="$( yq eval ".description.secondary.seed.release" - <<< "$PAYLOAD" )" || failure 8cdca9f1
                                                                                 mapfile -t RESOLUTIONS < <(
                                                                                     yq -r '.description.secondary.seed.resolutions.init // [] | .[]' <<< "$PAYLOAD"
                                                                                 )
@@ -169,10 +164,10 @@
                                                                                 do
                                                                                     RESOLUTION_ARGS+=( --resolution "$r" )
                                                                                 done
-                                                                                echo "$PAYLOAD" | iteration --type "init" --index "$INDEX" --release "$RELEASE" "${ builtins.concatStringsSep "" [ "$" "{" "RESOLUTION_ARGS[@]" "}" ] }" &
+                                                                                echo "$PAYLOAD" | iteration --type "init" --index "$INDEX" "${ builtins.concatStringsSep "" [ "$" "{" "RESOLUTION_ARGS[@]" "}" ] }" &
                                                                             elif [[ "invalid-release" == "$TYPE_" ]]
                                                                             then
-                                                                                abcecho "$PAYLOAD" | iteration --type "init" --index "$INDEX" --release "$RELEASE" "${ builtins.concatStringsSep "" [ "$" "{" "RESOLUTION_ARGS[@]" "}" ] }" &
+                                                                                echo "$PAYLOAD" | iteration --type "init" --index "$INDEX" "${ builtins.concatStringsSep "" [ "$" "{" "RESOLUTION_ARGS[@]" "}" ] }" &
                                                                             else
                                                                                 echo "releaser ignores $TYPE_"
                                                                             fi
