@@ -130,7 +130,7 @@
                                                                                         mkdir --parents "${ quarantine-directory }/$INDEX/$TYPE"
                                                                                         MODE=false envsubst < ${ resolve } > "${ quarantine-directory }/$INDEX/$TYPE.sh"
                                                                                         chmod 0500 "${ quarantine-directory }/$INDEX/$TYPE.sh"
-                                                                                        for RESOLUTION in "${ builtins.concatStringsSep "" [ "$" "{" "RESOLUTIONS[@]" "}" ] }
+                                                                                        for RESOLUTION in "${ builtins.concatStringsSep "" [ "$" "{" "RESOLUTIONS[@]" "}" ] }"
                                                                                         do
                                                                                             MODE=true envsubst < ${ resolve } > "${ quarantine-directory }/$INDEX//$TYPE/$TYPE.sh"
                                                                                             chmod 0500 "${ quarantine-directory }/$INDEX/$TYPE/$TYPE.sh"
