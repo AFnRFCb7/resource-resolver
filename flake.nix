@@ -21,6 +21,65 @@
                                                     runtimeInputs = [ pkgs.coreutils pkgs.gettext pkgs.jq pkgs.redis pkgs.yq-go failure ] ;
                                                     text =
                                                         let
+                                                            iteration =
+                                                                let
+                                                                    application =
+                                                                        pkgs.writeShellApplication
+                                                                            {
+                                                                                name = "iteration" ;
+                                                                                runtimeInputs = [ pkgs.coreutils pkgs.gettext pkgs.yq-go failure ] ;
+                                                                                text =
+                                                                                    ''
+                                                                                        RESOLUTIONS=( )
+                                                                                        while [[ "$#" -gt 0 ]]
+                                                                                        do
+                                                                                            case "$1" in
+                                                                                                --index)
+                                                                                                    INDEX="$2"
+                                                                                                    shift 2
+                                                                                                    ;;
+                                                                                                --release)
+                                                                                                    RELEASE="$2"
+                                                                                                    shift 2
+                                                                                                    ;;
+                                                                                                --resolution)
+                                                                                                    RESOLUTIONS+=( "$2" )"
+                                                                                                    shift 2
+                                                                                                    ;;
+                                                                                                --type)
+                                                                                                    TYPE="$2"
+                                                                                                    if [[ "$TYPE" != "init" ]] && [[ "$TYPE" != "release" ]]
+                                                                                                    then
+                                                                                                        failure 193f44e0
+                                                                                                    fi
+                                                                                                    shift 2
+                                                                                                    ;;
+                                                                                                *)
+                                                                                                    failure dd61579e
+                                                                                                    shift
+                                                                                                    ;;
+                                                                                            esac
+                                                                                        done
+                                                                                        if [[ -z "$INDEX" ]]
+                                                                                        then
+                                                                                            failure 25b5e484
+                                                                                        fi
+                                                                                        if [[ -z "$TYPE" ]]
+                                                                                        then
+                                                                                            failure d789f6bc
+                                                                                        fi
+                                                                                        mkdir --parents "${ quarantine-directory }/$INDEX/$TYPE"
+                                                                                        MODE=false envsubst < ${ resolve } > "${ quarantine-directory }/$INDEX/$TYPE.sh"
+                                                                                        chmod 0500 "${ quarantine-directory }/$INDEX/$TYPE.sh"
+                                                                                        for RESOLUTION in "${ builtins.concatStringsSep "" [ "$" "{" "RESOLUTIONS[@]" "}" ] }
+                                                                                        do
+                                                                                            MODE=true envsubst < ${ resolve } > "${ quarantine-directory }/$INDEX//$TYPE/$TYPE.sh"
+                                                                                            chmod 0500 "${ quarantine-directory }/$INDEX/$TYPE/$TYPE.sh"
+                                                                                        done
+                                                                                        cat | yq eval --prettyPrint '.' - <<< "$PAYLOAD" > "${ quarantine-directory }/$INDEX/$TYPE.yaml"
+                                                                                    '' ;
+                                                                            } ;
+                                                                    in "${ application }/bin/iteration" ;
                                                             resolve =
                                                                 let
                                                                     application =
@@ -37,7 +96,6 @@
                                                                                     ] ;
                                                                                 text =
                                                                                     ''
-                                                                                        echo c692a789
                                                                                         ARGUMENTS=( "$@" )
                                                                                         # shellcheck disable=SC2034
                                                                                         ARGUMENTS_JSON="$( printf '%s\n' "${ builtins.concatStringsSep "" [ "$" "{" "ARGUMENTS[@]" "}" ] }" | jq -R . | jq -s . )" || failure 61a8398a
@@ -88,40 +146,22 @@
                                                                         read -r TYPE || failure 76c840d6
                                                                         read -r CHANNEL || failure 0702dae0
                                                                         read -r PAYLOAD || failure 3280f3d7
-                                                                        echo b0fcf4a3
-                                                                        echo "TYPE=$TYPE CHANNEL=$CHANNEL"
                                                                         if [[ "$TYPE" == "message" ]] && [[ "${ channel }" == "$CHANNEL" ]]
                                                                         then
                                                                             TYPE_="$( jq --raw-output ".type" - <<< "$PAYLOAD" )" || failure 1dc13b8d
-                                                                            echo "TYPE=$TYPE_"
                                                                             if [[ "invalid" == "$TYPE_" ]]
                                                                             then
                                                                                 INDEX="$( yq eval ".index | tostring " - <<< "$PAYLOAD" )" || failure 45ac1a52
-                                                                                mkdir --parents "${ quarantine-directory }/$INDEX/init"
-                                                                                export ARGUMENTS="\$ARGUMENTS"
-                                                                                export ARGUMENTS_JSON="\$ARGUMENTS_JSON"
-                                                                                export INDEX
-                                                                                export JSON="\$JSON"
-                                                                                export HAS_STANDARD_INPUT="\$HAS_STANDARD_INPUT"
                                                                                 RELEASE="$( yq eval ".description.secondary.seed.release" - <<< "$PAYLOAD" )" || failure 8cdca9f1
-                                                                                export RELEASE
-                                                                                export RELEASE_RESOLUTIONS="\$RELEASE_RESOLUTIONS"
-                                                                                RELEASE_RESOLUTIONS_JSON="$( yq eval --output-format=json '.description.secondary.seed.resolutions.release // []' - <<< "$PAYLOAD" )" || failure f7cbb413
-                                                                                export RELEASE_RESOLUTIONS_JSON
-                                                                                export STANDARD_INPUT="\$STANDARD_INPUT"
-                                                                                export TYPE="resolve-init"
-                                                                                echo 2e72d2a8
-                                                                                yq eval --prettyPrint '.' - <<< "$PAYLOAD" > "${ quarantine-directory }/$INDEX/init.yaml"
-                                                                                chmod 0400 "${ quarantine-directory }/$INDEX/init.yaml"
-                                                                                MODE=false RESOLUTION=init envsubst < "${ resolve }" > "${ quarantine-directory }/$INDEX/init.sh"
-                                                                                chmod 0500 "${ quarantine-directory }/$INDEX/init.sh"
-                                                                                yq eval '.description.secondary.seed.resolutions.init // [] | .[]' - <<< "$PAYLOAD" | while IFS= read -r RESOLUTION
+                                                                                mapfile -t RESOLUTIONS < <(
+                                                                                    yq -r '.description.secondary.seed.resolutions.init // [] | .[]' <<< "$PAYLOAD"
+                                                                                )
+                                                                                RESOLUTION_ARGS=()
+                                                                                for r in "${ builtins.concatStringsSep "" [ "$" "{" "RESOLUTIONS[@]" "}" ] }"
                                                                                 do
-                                                                                    export MODE=true
-                                                                                    export RESOLUTION
-                                                                                    envsubst < "${ resolve }" > "${ quarantine-directory }/$INDEX/init/$RESOLUTION"
-                                                                                    chmod 0500 "${ quarantine-directory }/$INDEX/init/$RESOLUTION"
+                                                                                    RESOLUTION_ARGS+=( --resolution "$r" )
                                                                                 done
+                                                                                echo "$PAYLOAD" | iteration --type "init" --index "$INDEX" --release "$RELEASE" "$RESOLUTIONS" "${ builtins.concatStringsSep "" [ "$" "{" "RESOLUTION_ARGS" "}" ] } &
                                                                             fi
                                                                         fi
                                                                     done
