@@ -135,7 +135,7 @@
                                                                                             MODE=true envsubst RESOLUTION=$RESOLUTION < ${ resolve } > "${ quarantine-directory }/$INDEX/$TYPE/$TYPE.sh"
                                                                                             chmod 0500 "${ quarantine-directory }/$INDEX/$TYPE/$TYPE.sh"
                                                                                         done
-                                                                                        cat | yq eval --prettyPrint '.' - <<< "$PAYLOAD" > "${ quarantine-directory }/$INDEX/$TYPE.yaml"
+                                                                                        cat | yq eval --prettyPrint '.' > "${ quarantine-directory }/$INDEX/$TYPE.yaml"
                                                                                     '' ;
                                                                     }
                                                             )
