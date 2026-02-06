@@ -132,7 +132,7 @@
                                                                                         chmod 0500 "${ quarantine-directory }/$INDEX/$TYPE.sh"
                                                                                         for RESOLUTION in "${ builtins.concatStringsSep "" [ "$" "{" "RESOLUTIONS[@]" "}" ] }"
                                                                                         do
-                                                                                            MODE=true envsubst < ${ resolve } > "${ quarantine-directory }/$INDEX//$TYPE/$TYPE.sh"
+                                                                                            MODE=true envsubst < ${ resolve } > "${ quarantine-directory }/$INDEX/$TYPE/$TYPE.sh"
                                                                                             chmod 0500 "${ quarantine-directory }/$INDEX/$TYPE/$TYPE.sh"
                                                                                         done
                                                                                         cat | yq eval --prettyPrint '.' - <<< "$PAYLOAD" > "${ quarantine-directory }/$INDEX/$TYPE.yaml"
@@ -153,7 +153,7 @@
                                                                         if [[ "$TYPE" == "message" ]] && [[ "${ channel }" == "$CHANNEL" ]]
                                                                         then
                                                                             TYPE_="$( jq --raw-output ".type" - <<< "$PAYLOAD" )" || failure 1dc13b8d
-                                                                            if [[ "invalid-init" == "$TYPE_" ]]
+                                                                            if [[ "invalid-init" == "$TYPE_" ]] || [[ "invalid-release" == "$TYPE_" ]]
                                                                             then
                                                                                 INDEX="$( yq eval ".index | tostring " - <<< "$PAYLOAD" )" || failure 45ac1a52
                                                                                 mapfile -t RESOLUTIONS < <(
@@ -164,9 +164,6 @@
                                                                                 do
                                                                                     RESOLUTION_ARGS+=( --resolution "$r" )
                                                                                 done
-                                                                                echo "$PAYLOAD" | iteration --type "init" --index "$INDEX" "${ builtins.concatStringsSep "" [ "$" "{" "RESOLUTION_ARGS[@]" "}" ] }" &
-                                                                            elif [[ "invalid-release" == "$TYPE_" ]]
-                                                                            then
                                                                                 echo "$PAYLOAD" | iteration --type "init" --index "$INDEX" "${ builtins.concatStringsSep "" [ "$" "{" "RESOLUTION_ARGS[@]" "}" ] }" &
                                                                             else
                                                                                 echo "releaser ignores $TYPE_"
