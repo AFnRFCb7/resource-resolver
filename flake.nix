@@ -102,7 +102,7 @@
                                                                                                     shift 2
                                                                                                     ;;
                                                                                                 --resolution)
-                                                                                                    RESOLUTIONS+=( "$2" )"
+                                                                                                    RESOLUTIONS+=( "$2" )
                                                                                                     shift 2
                                                                                                     ;;
                                                                                                 --type)
