@@ -177,9 +177,10 @@
                                                                                 do
                                                                                     RESOLUTION_ARGS+=( --resolution "$r" )
                                                                                 done
-                                                                                echo "$PAYLOAD" | iteration --type init --index "$INDEX" "${ builtins.concatStringsSep "" [ "$" "{" "RESOLUTION_ARGS[@]" "}" ] }" &
+                                                                                echo "$PAYLOAD" | iteration --type init --index "$INDEX" --hash "$HASH" "${ builtins.concatStringsSep "" [ "$" "{" "RESOLUTION_ARGS[@]" "}" ] }" &
                                                                             elif [[ "invalid-release" == "$TYPE_" ]]
                                                                             then
+                                                                                HASH="$( yq eval ".hash | tostring " - <<< "$PAYLOAD" )" || failure a22f7da7
                                                                                 INDEX="$( yq eval ".index | tostring " - <<< "$PAYLOAD" )" || failure 78cd492b
                                                                                 mapfile -t RESOLUTIONS < <(
                                                                                     yq -r '.resolutions // [] | .[]' <<< "$PAYLOAD"
@@ -189,7 +190,7 @@
                                                                                 do
                                                                                     RESOLUTION_ARGS+=( --resolution "$r" )
                                                                                 done
-                                                                                echo "$PAYLOAD" | iteration --type release --index "$INDEX" "${ builtins.concatStringsSep "" [ "$" "{" "RESOLUTION_ARGS[@]" "}" ] }" &
+                                                                                echo "$PAYLOAD" | iteration --type release --index "$INDEX" --hash "$HASH" "${ builtins.concatStringsSep "" [ "$" "{" "RESOLUTION_ARGS[@]" "}" ] }" &
                                                                             else
                                                                                 echo "releaser ignores $TYPE_"
                                                                             fi
