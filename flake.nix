@@ -172,7 +172,7 @@
                                                                                 echo "$PAYLOAD" | iteration --type "init" --index "$INDEX" --release "$RELEASE" "${ builtins.concatStringsSep "" [ "$" "{" "RESOLUTION_ARGS[@]" "}" ] }" &
                                                                             elif [[ "invalid-release" == "$TYPE_" ]]
                                                                             then
-                                                                                echo "${AYLOAD" | iteration"}
+                                                                                echo echo "$PAYLOAD" | iteration --type "init" --index "$INDEX" --release "$RELEASE" "${ builtins.concatStringsSep "" [ "$" "{" "RESOLUTION_ARGS[@]" "}" ] }" &
                                                                             else
                                                                                 echo "releaser ignores $TYPE_"
                                                                             fi
