@@ -161,7 +161,12 @@
                                                                                 do
                                                                                     RESOLUTION_ARGS+=( --resolution "$r" )
                                                                                 done
-                                                                                echo "$PAYLOAD" | iteration --type "init" --index "$INDEX" --release "$RELEASE" "$RESOLUTIONS" "${ builtins.concatStringsSep "" [ "$" "{" "RESOLUTION_ARGS[@]" "}" ] }" &
+                                                                                echo "$PAYLOAD" | iteration --type "init" --index "$INDEX" --release "$RELEASE" "${ builtins.concatStringsSep "" [ "$" "{" "RESOLUTION_ARGS[@]" "}" ] }" &
+                                                                            elif [[ "invalid-release" == "$TYPE_" ]]
+                                                                            then
+                                                                                echo TBD
+                                                                            else
+                                                                                echo "releaser ignores $TYPE_"
                                                                             fi
                                                                         fi
                                                                     done
