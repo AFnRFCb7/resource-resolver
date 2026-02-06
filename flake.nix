@@ -112,7 +112,7 @@
                                                                                                     shift 2
                                                                                                     ;;
                                                                                                 --type)
-                                                                                                    INPUT_TYPE="$2"
+                                                                                                    TYPE="$2"
                                                                                                     if [[ "$TYPE" != "init" ]] && [[ "$TYPE" != "release" ]]
                                                                                                     then
                                                                                                         failure 193f44e0
@@ -137,7 +137,6 @@
                                                                                         then
                                                                                             failure d789f6bc
                                                                                         fi
-                                                                                        INPUT_TYPE="invalid-$TYPE"
                                                                                         OUTPUT_TYPE="resolve-$TYPE"
                                                                                         mkdir --parents "${ quarantine-directory }/$INDEX/$TYPE"
                                                                                         MODE=false TYPE="$OUTPUT_TYPE" envsubst < ${ resolve } > "${ quarantine-directory }/$INDEX/$TYPE.sh"
