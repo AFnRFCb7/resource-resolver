@@ -161,7 +161,7 @@
                                                                                 do
                                                                                     RESOLUTION_ARGS+=( --resolution "$r" )
                                                                                 done
-                                                                                echo "$PAYLOAD" | iteration --type "init" --index "$INDEX" --release "$RELEASE" "$RESOLUTIONS" "${ builtins.concatStringsSep "" [ "$" "{" "RESOLUTION_ARGS" "}" ] } &
+                                                                                echo "$PAYLOAD" | iteration --type "init" --index "$INDEX" --release "$RELEASE" "$RESOLUTIONS" "${ builtins.concatStringsSep "" [ "$" "{" "RESOLUTION_ARGS[@]" "}" ] }" &
                                                                             fi
                                                                         fi
                                                                     done
