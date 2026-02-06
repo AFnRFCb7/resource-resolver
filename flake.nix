@@ -18,17 +18,80 @@
                                             pkgs.writeShellApplication
                                                 {
                                                     name = "resource-resolver" ;
-                                                    runtimeInputs = [ pkgs.coreutils pkgs.gettext pkgs.jq pkgs.redis pkgs.yq-go failure ] ;
-                                                    text =
-                                                        let
-                                                            iteration =
-                                                                let
-                                                                    application =
-                                                                        pkgs.writeShellApplication
-                                                                            {
-                                                                                name = "iteration" ;
-                                                                                runtimeInputs = [ pkgs.coreutils pkgs.gettext pkgs.yq-go failure ] ;
-                                                                                text =
+                                                    runtimeInputs =
+                                                        [
+                                                            pkgs.coreutils
+                                                            pkgs.gettext
+                                                            pkgs.jq
+                                                            pkgs.redis
+                                                            pkgs.yq-go
+                                                            (
+                                                                pkgs.writeShellApplication
+                                                                    {
+                                                                        name = "iteration" ;
+                                                                        runtimeInputs = [ pkgs.coreutils pkgs.gettext pkgs.yq-go failure ] ;
+                                                                        text =
+                                                                            let
+                                                                                resolve =
+                                                                                    let
+                                                                                        application =
+                                                                                            pkgs.writeShellApplication
+                                                                                                {
+                                                                                                    name = "resolve" ;
+                                                                                                    runtimeInputs =
+                                                                                                        [
+                                                                                                            pkgs.coreutils
+                                                                                                            pkgs.jq
+                                                                                                            pkgs.redis
+                                                                                                            pkgs.yq-go
+                                                                                                            failure
+                                                                                                        ] ;
+                                                                                                    text =
+                                                                                                        ''
+                                                                                                            ARGUMENTS=( "$@" )
+                                                                                                            # shellcheck disable=SC2034
+                                                                                                            ARGUMENTS_JSON="$( printf '%s\n' "${ builtins.concatStringsSep "" [ "$" "{" "ARGUMENTS[@]" "}" ] }" | jq -R . | jq -s . )" || failure 61a8398a
+                                                                                                            if [[ -t 0 ]]
+                                                                                                            then
+                                                                                                                HAS_STANDARD_INPUT=false
+                                                                                                                STANDARD_INPUT=""
+                                                                                                            else
+                                                                                                                HAS_STANDARD_INPUT=true
+                                                                                                                STANDARD_INPUT="$( cat )" || failure b78f1b75
+                                                                                                            fi
+                                                                                                            export HAS_STANDARD_INPUT
+                                                                                                            export STANDARD_INPUT
+                                                                                                            export RELEASE
+                                                                                                            JSON="$(
+                                                                                                                jq \
+                                                                                                                    --null-input \
+                                                                                                                    --compact-output \
+                                                                                                                    --argjson ARGUMENTS "$ARGUMENTS_JSON" \
+                                                                                                                    --arg HAS_STANDARD_INPUT "$HAS_STANDARD_INPUT" \
+                                                                                                                    --argjson RELEASE_RESOLUTIONS '$RELEASE_RESOLUTIONS_JSON' \
+                                                                                                                    --arg STANDARD_INPUT "$STANDARD_INPUT" \
+                                                                                                                    '
+                                                                                                                        {
+                                                                                                                            "arguments" : $ARGUMENTS ,
+                                                                                                                            "has-standard-input" : ( $HAS_STANDARD_INPUT | test("true") ) ,
+                                                                                                                            "index" : "$INDEX" ,
+                                                                                                                            "mode" : ( "$MODE" | test("true") ) ,
+                                                                                                                            "release" : "$RELEASE" ,
+                                                                                                                            "release-resolutions" : $RELEASE_RESOLUTIONS ,
+                                                                                                                            "resolution" : "$RESOLUTION" ,
+                                                                                                                            "standard-input" : $STANDARD_INPUT ,
+                                                                                                                            "type" : "$TYPE"
+                                                                                                                        }
+                                                                                                                    '
+                                                                                                            )" || failure 7a875425
+                                                                                                            redis-cli PUBLISH ${ channel } "$JSON" > /dev/null
+                                                                                                            yq eval --prettyPrint "." - <<< "$JSON"
+                                                                                                            rm --force "${ quarantine-directory }/$INDEX/init/resolve.sh"
+                                                                                                            rm --recursive --force "${ quarantine-directory }/$INDEX/init/resolve"
+                                                                                                        '' ;
+                                                                                                } ;
+                                                                                    in "${ application }/bin/resolve" ;
+                                                                                in
                                                                                     ''
                                                                                         RESOLUTIONS=( )
                                                                                         while [[ "$#" -gt 0 ]]
@@ -78,67 +141,12 @@
                                                                                         done
                                                                                         cat | yq eval --prettyPrint '.' - <<< "$PAYLOAD" > "${ quarantine-directory }/$INDEX/$TYPE.yaml"
                                                                                     '' ;
-                                                                            } ;
-                                                                    in "${ application }/bin/iteration" ;
-                                                            resolve =
-                                                                let
-                                                                    application =
-                                                                        pkgs.writeShellApplication
-                                                                            {
-                                                                                name = "resolve" ;
-                                                                                runtimeInputs =
-                                                                                    [
-                                                                                        pkgs.coreutils
-                                                                                        pkgs.jq
-                                                                                        pkgs.redis
-                                                                                        pkgs.yq-go
-                                                                                        failure
-                                                                                    ] ;
-                                                                                text =
-                                                                                    ''
-                                                                                        ARGUMENTS=( "$@" )
-                                                                                        # shellcheck disable=SC2034
-                                                                                        ARGUMENTS_JSON="$( printf '%s\n' "${ builtins.concatStringsSep "" [ "$" "{" "ARGUMENTS[@]" "}" ] }" | jq -R . | jq -s . )" || failure 61a8398a
-                                                                                        if [[ -t 0 ]]
-                                                                                        then
-                                                                                            HAS_STANDARD_INPUT=false
-                                                                                            STANDARD_INPUT=""
-                                                                                        else
-                                                                                            HAS_STANDARD_INPUT=true
-                                                                                            STANDARD_INPUT="$( cat )" || failure b78f1b75
-                                                                                        fi
-                                                                                        export HAS_STANDARD_INPUT
-                                                                                        export STANDARD_INPUT
-                                                                                        export RELEASE
-                                                                                        JSON="$(
-                                                                                            jq \
-                                                                                                --null-input \
-                                                                                                --compact-output \
-                                                                                                --argjson ARGUMENTS "$ARGUMENTS_JSON" \
-                                                                                                --arg HAS_STANDARD_INPUT "$HAS_STANDARD_INPUT" \
-                                                                                                --argjson RELEASE_RESOLUTIONS '$RELEASE_RESOLUTIONS_JSON' \
-                                                                                                --arg STANDARD_INPUT "$STANDARD_INPUT" \
-                                                                                                '
-                                                                                                    {
-                                                                                                        "arguments" : $ARGUMENTS ,
-                                                                                                        "has-standard-input" : ( $HAS_STANDARD_INPUT | test("true") ) ,
-                                                                                                        "index" : "$INDEX" ,
-                                                                                                        "mode" : ( "$MODE" | test("true") ) ,
-                                                                                                        "release" : "$RELEASE" ,
-                                                                                                        "release-resolutions" : $RELEASE_RESOLUTIONS ,
-                                                                                                        "resolution" : "$RESOLUTION" ,
-                                                                                                        "standard-input" : $STANDARD_INPUT ,
-                                                                                                        "type" : "$TYPE"
-                                                                                                    }
-                                                                                                '
-                                                                                        )" || failure 7a875425
-                                                                                        redis-cli PUBLISH ${ channel } "$JSON" > /dev/null
-                                                                                        yq eval --prettyPrint "." - <<< "$JSON"
-                                                                                        rm --force "${ quarantine-directory }/$INDEX/init/resolve.sh"
-                                                                                        rm --recursive --force "${ quarantine-directory }/$INDEX/init/resolve"
-                                                                                    '' ;
-                                                                            } ;
-                                                                in "${ application }/bin/resolve" ;
+                                                                    }
+                                                            )
+                                                            failure
+                                                        ] ;
+                                                    text =
+                                                        let
                                                             in
                                                                 ''
                                                                     redis-cli SUBSCRIBE ${ channel } | while true
@@ -164,7 +172,7 @@
                                                                                 echo "$PAYLOAD" | iteration --type "init" --index "$INDEX" --release "$RELEASE" "${ builtins.concatStringsSep "" [ "$" "{" "RESOLUTION_ARGS[@]" "}" ] }" &
                                                                             elif [[ "invalid-release" == "$TYPE_" ]]
                                                                             then
-                                                                                echo TBD
+                                                                                echo "${AYLOAD" | iteration"}
                                                                             else
                                                                                 echo "releaser ignores $TYPE_"
                                                                             fi
