@@ -107,7 +107,7 @@
                                                                                                     ;;
                                                                                                 --type)
                                                                                                     TYPE="$2"
-                                                                                                    if [[ "$TYPE" != "init" ]] && [[ "$TYPE" != "release" ]]
+                                                                                                    if [[ "$TYPE" != "invalid-init" ]] && [[ "$TYPE" != "invalid-release" ]]
                                                                                                     then
                                                                                                         failure 193f44e0
                                                                                                     fi
