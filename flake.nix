@@ -132,7 +132,7 @@
                                                                                         chmod 0500 "${ quarantine-directory }/$INDEX/$TYPE.sh"
                                                                                         for RESOLUTION in "${ builtins.concatStringsSep "" [ "$" "{" "RESOLUTIONS[@]" "}" ] }"
                                                                                         do
-                                                                                            MODE=true RESOLUTION=$RESOLUTION envsubst < ${ resolve } > "${ quarantine-directory }/$INDEX/$TYPE/$TYPE.sh"
+                                                                                            MODE=true RESOLUTION=$RESOLUTION envsubst < ${ resolve } > "${ quarantine-directory }/$INDEX/$TYPE/$RESOLUTION.sh"
                                                                                             chmod 0500 "${ quarantine-directory }/$INDEX/$TYPE/$TYPE.sh"
                                                                                         done
                                                                                         echo 65907cbe
