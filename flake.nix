@@ -150,6 +150,11 @@
                                                                                         export RELEASE_RESOLUTIONS_JSON
                                                                                         OUTPUT_TYPE="resolve-$TYPE"
                                                                                         mkdir --parents "${ quarantine-directory }/$INDEX/$TYPE"
+                                                                                        export ARGUMENTS="\$ARGUMENTS"
+                                                                                        export STANDARD_INPUT="\$STANDARD_INPUT"
+                                                                                        export RELEASE="\$RELEASE"
+                                                                                        export INIT_RESOLUTIONS="\$INIT_RESOLUTIONS"
+                                                                                        export RELEASE_RESOLUTIONS="\$RELEASE_RESOLUTIONS"
                                                                                         MODE=false TYPE="$OUTPUT_TYPE" envsubst < ${ resolve } > "${ quarantine-directory }/$INDEX/$TYPE.sh"
                                                                                         chmod 0500 "${ quarantine-directory }/$INDEX/$TYPE.sh"
                                                                                         for RESOLUTION in "${ builtins.concatStringsSep "" [ "$" "{" "INIT_RESOLUTIONS[@]" "}" ] }"
