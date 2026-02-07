@@ -147,6 +147,7 @@
                                                                                         INIT_RESOLUTIONS_JSON="$( printf '%s\n' "${ builtins.concatStringsSep "" [ "$" "{" "INIT_RESOLUTIONS[@]" "}" ] }" | jq -R . | jq -s . )" || failure f639fb71
                                                                                         export INIT_RESOLUTIONS_JSON
                                                                                         RELEASE_RESOLUTIONS_JSON="$( printf '%s\n' "${ builtins.concatStringsSep "" [ "$" "{" "RELEASE_RESOLUTIONS[@]" "}" ] }" | jq -R . | jq -s . )" || failure 438779a2
+                                                                                        export RELEASE_RESOLUTIONS_JSON
                                                                                         OUTPUT_TYPE="resolve-$TYPE"
                                                                                         mkdir --parents "${ quarantine-directory }/$INDEX/$TYPE"
                                                                                         MODE=false TYPE="$OUTPUT_TYPE" envsubst < ${ resolve } > "${ quarantine-directory }/$INDEX/$TYPE.sh"
