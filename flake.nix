@@ -84,8 +84,8 @@
                                                                                                                             "index" : "$INDEX" ,
                                                                                                                             "mode" : ( "$MODE" | test("true") ) ,
                                                                                                                             "release" : "$RELEASE" ,
-                                                                                                                            "init-resolutions" : $INIT_RESOLUTIONS ,
-                                                                                                                            "release-resolutions" : $RELEASE_RESOLUTIONS ,
+                                                                                                                            "init-resolutions" : $INIT_RESOLUTIONS__ ,
+                                                                                                                            "release-resolutions" : $RELEASE_RESOLUTIONS__ ,
                                                                                                                             "resolution" : "$RESOLUTION" ,
                                                                                                                             "standard-input" : $STANDARD_INPUT ,
                                                                                                                             "type" : "$TYPE"
@@ -151,9 +151,11 @@
                                                                                         export INIT_RESOLUTIONS_JSON="\$INIT_RESOLUTIONS_JSON"
                                                                                         INIT_RESOLUTIONS_JSON_="$( printf '%s\n' "${ builtins.concatStringsSep "" [ "$" "{" "INIT_RESOLUTIONS_[@]" "}" ] }" | jq -R . | jq -s . )" || failure f639fb71
                                                                                         export INIT_RESOLUTIONS_JSON_
+                                                                                        export INIT_RESOLUTIONS__="\$INIT_RESOLUTIONS"
                                                                                         export RELEASE_RESOLUTIONS_JSON="\$RELEASE_RESOLUTIONS_JSON"
                                                                                         RELEASE_RESOLUTIONS_JSON_="$( printf '%s\n' "${ builtins.concatStringsSep "" [ "$" "{" "RELEASE_RESOLUTIONS_[@]" "}" ] }" | jq -R . | jq -s . )" || failure 438779a2
                                                                                         export RELEASE_RESOLUTIONS_JSON_
+                                                                                        export RELEASE_RESOLUTIONS__="\$RELEASE_RESOLUTIONS"
                                                                                         OUTPUT_TYPE="resolve-$TYPE"
                                                                                         mkdir --parents "${ quarantine-directory }/$INDEX/$TYPE"
                                                                                         export ARGUMENTS_JSON="\$ARGUMENTS_JSON"
