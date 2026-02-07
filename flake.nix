@@ -124,7 +124,7 @@
                                                                                                     shift 2
                                                                                                     ;;
                                                                                                 --release)
-                                                                                                    RELEASE="$RELEASE"
+                                                                                                    RELEASE="$2"
                                                                                                     shift 2
                                                                                                     ;;
                                                                                                 --type)
@@ -153,7 +153,7 @@
                                                                                         then
                                                                                             failure d789f6bc
                                                                                         fi
-                                                                                        export RELEASE="$RELEASE"
+                                                                                        export RELEASE
                                                                                         export TYPE="$TYPE"
                                                                                         export INIT_RESOLUTIONS_JSON="\$INIT_RESOLUTIONS_JSON"
                                                                                         INIT_RESOLUTIONS_JSON_="$( printf '%s\n' "${ builtins.concatStringsSep "" [ "$" "{" "INIT_RESOLUTIONS_[@]" "}" ] }" | jq -R . | jq -s . )" || failure f639fb71
