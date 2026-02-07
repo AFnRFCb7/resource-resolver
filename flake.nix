@@ -69,7 +69,8 @@
                                                                                                                     --argjson ARGUMENTS "$ARGUMENTS_JSON" \
                                                                                                                     --arg HASH "$HASH" \
                                                                                                                     --arg HAS_STANDARD_INPUT "$HAS_STANDARD_INPUT" \
-                                                                                                                    --argjson RELEASE_RESOLUTIONS '$RELEASE_RESOLUTIONS_JSON' \
+                                                                                                                    --argjson INIT_RESOLUTIONS "$INIT_RESOLUTIONS_JSON" \
+                                                                                                                    --argjson RELEASE_RESOLUTIONS "$RELEASE_RESOLUTIONS_JSON" \
                                                                                                                     --arg STANDARD_INPUT "$STANDARD_INPUT" \
                                                                                                                     '
                                                                                                                         {
@@ -79,6 +80,7 @@
                                                                                                                             "index" : "$INDEX" ,
                                                                                                                             "mode" : ( "$MODE" | test("true") ) ,
                                                                                                                             "release" : "$RELEASE" ,
+                                                                                                                            "init-resolutions" : $INIT_RESOLUTIONS ,
                                                                                                                             "release-resolutions" : $RELEASE_RESOLUTIONS ,
                                                                                                                             "resolution" : "$RESOLUTION" ,
                                                                                                                             "standard-input" : $STANDARD_INPUT ,
@@ -95,7 +97,8 @@
                                                                                     in "${ application }/bin/resolve" ;
                                                                                 in
                                                                                     ''
-                                                                                        RESOLUTIONS=( )
+                                                                                        INIT_RESOLUTIONS=( )
+                                                                                        RELEASE_RESOLUTIONS=( )
                                                                                         while [[ "$#" -gt 0 ]]
                                                                                         do
                                                                                             case "$1" in
@@ -107,8 +110,12 @@
                                                                                                     export INDEX="$2"
                                                                                                     shift 2
                                                                                                     ;;
-                                                                                                --resolution)
-                                                                                                    RESOLUTIONS+=( "$2" )
+                                                                                                --init-resolution)
+                                                                                                    INIT_RESOLUTIONS+=( "$2" )
+                                                                                                    shift 2
+                                                                                                    ;;
+                                                                                                --release-resolution)
+                                                                                                    RELEASE_RESOLUTIONS+=( "$2" )
                                                                                                     shift 2
                                                                                                     ;;
                                                                                                 --type)
@@ -137,11 +144,14 @@
                                                                                         then
                                                                                             failure d789f6bc
                                                                                         fi
+                                                                                        INIT_RESOLUTIONS_JSON="$( printf '%s\n' "${ builtins.concatStringsSep "" [ "$" "{" "INIT_RESOLUTIONS[@]" "}" ] }" | jq -R . | jq -s . )" || failure f639fb71
+                                                                                        export INIT_RESOLUTIONS_JSON
+                                                                                        RELEASE_RESOLUTIONS_JSON="$( printf '%s\n' "${ builtins.concatStringsSep "" [ "$" "{" "RELEASE_RESOLUTIONS[@]" "}" ] }" | jq -R . | jq -s . )" || failure 438779a2
                                                                                         OUTPUT_TYPE="resolve-$TYPE"
                                                                                         mkdir --parents "${ quarantine-directory }/$INDEX/$TYPE"
                                                                                         MODE=false TYPE="$OUTPUT_TYPE" envsubst < ${ resolve } > "${ quarantine-directory }/$INDEX/$TYPE.sh"
                                                                                         chmod 0500 "${ quarantine-directory }/$INDEX/$TYPE.sh"
-                                                                                        for RESOLUTION in "${ builtins.concatStringsSep "" [ "$" "{" "RESOLUTIONS[@]" "}" ] }"
+                                                                                        for RESOLUTION in "${ builtins.concatStringsSep "" [ "$" "{" "INIT_RESOLUTIONS[@]" "}" ] }"
                                                                                         do
                                                                                             MODE=true RESOLUTION=$RESOLUTION TYPE="$OUTPUT_TYPE" envsubst < ${ resolve } > "${ quarantine-directory }/$INDEX/$TYPE/$RESOLUTION"
                                                                                             chmod 0500 "${ quarantine-directory }/$INDEX/$TYPE/$RESOLUTION"
@@ -169,29 +179,37 @@
                                                                             then
                                                                                 HASH="$( yq eval ".index | tostring " - <<< "$PAYLOAD" )" || failure 45ac1a52
                                                                                 INDEX="$( yq eval ".index | tostring " - <<< "$PAYLOAD" )" || failure 45ac1a52
-                                                                                mapfile -t RESOLUTIONS < <(
+                                                                                mapfile -t INIT_RESOLUTIONS < <(
                                                                                     yq -r '.description.secondary.seed.resolutions.init // [] | .[]' <<< "$PAYLOAD"
                                                                                 )
-                                                                                RESOLUTION_ARGS=()
-                                                                                for r in "${ builtins.concatStringsSep "" [ "$" "{" "RESOLUTIONS[@]" "}" ] }"
+                                                                                INIT_RESOLUTION_ARGS=()
+                                                                                for r in "${ builtins.concatStringsSep "" [ "$" "{" "INIT_RESOLUTIONS[@]" "}" ] }"
                                                                                 do
-                                                                                    RESOLUTION_ARGS+=( --resolution "$r" )
+                                                                                    INIT_RESOLUTION_ARGS+=( --init-resolution "$r" )
                                                                                 done
-                                                                                echo "$PAYLOAD" | iteration --type init --index "$INDEX" --hash "$HASH" "${ builtins.concatStringsSep "" [ "$" "{" "RESOLUTION_ARGS[@]" "}" ] }" &
+                                                                                mapfile -t RELEASE_RESOLUTIONS < <(
+                                                                                    yq -r '.description.secondary.seed.resolutions.release // [] | .[]' <<< "$PAYLOAD"
+                                                                                )
+                                                                                for r in "${ builtins.concatStringsSep "" [ "$" "{" "RELEASE_RESOLUTIONS[@]" "}" ] }"
+                                                                                do
+                                                                                    RELEASE_RESOLUTION_ARGS+=( --release-resolution "$r" )
+                                                                                done
+                                                                                # shellcheck disable=2086
+                                                                                echo "$PAYLOAD" | iteration --type init --index "$INDEX" --hash "$HASH" ${ builtins.concatStringsSep "" [ "$" "{" "INIT_RESOLUTION_ARGS[@]" "}" ] } ${ builtins.concatStringsSep "" [ "$" "{" "RELEASE_RESOLUTION_ARGS[@]" "}" ] } &
                                                                             elif [[ "invalid-release" == "$TYPE_" ]]
                                                                             then
                                                                                 HASH="$( yq eval ".hash | tostring " - <<< "$PAYLOAD" )" || failure a22f7da7
                                                                                 INDEX="$( yq eval ".index | tostring " - <<< "$PAYLOAD" )" || failure 78cd492b
-                                                                                mapfile -t RESOLUTIONS < <(
+                                                                                mapfile -t RELEASE_RESOLUTIONS < <(
                                                                                     yq -r '.resolutions // [] | .[]' <<< "$PAYLOAD"
                                                                                 )
-                                                                                RESOLUTION_ARGS=()
-                                                                                for r in "${ builtins.concatStringsSep "" [ "$" "{" "RESOLUTIONS[@]" "}" ] }"
+                                                                                RELEASE_RESOLUTION_ARGS=()
+                                                                                for r in "${ builtins.concatStringsSep "" [ "$" "{" "RELEASE_RESOLUTIONS[@]" "}" ] }"
                                                                                 do
-                                                                                    RESOLUTION_ARGS+=( --resolution "$r" )
+                                                                                    RELEASE_RESOLUTION_ARGS+=( --release-resolution "$r" )
                                                                                 done
-                                                                                echo "$PAYLOAD" iteration --type release --index "$INDEX" --hash "$HASH" "${ builtins.concatStringsSep "" [ "$" "{" "RESOLUTION_ARGS[@]" "}" ] }" &
-                                                                                echo "$PAYLOAD" | iteration --type release --index "$INDEX" --hash "$HASH" "${ builtins.concatStringsSep "" [ "$" "{" "RESOLUTION_ARGS[@]" "}" ] }" &
+                                                                                # shellcheck disable=2086
+                                                                                echo "$PAYLOAD" | iteration --type release --index "$INDEX" --hash "$HASH" "${ builtins.concatStringsSep "" [ "$" "{" "RELEASE_RESOLUTION_ARGS[@]" "}" ] }" &
                                                                             else
                                                                                 echo "releaser ignores $TYPE_"
                                                                             fi
