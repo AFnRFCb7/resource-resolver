@@ -97,8 +97,8 @@
                                                                                     in "${ application }/bin/resolve" ;
                                                                                 in
                                                                                     ''
-                                                                                        INIT_RESOLUTIONS=( )
-                                                                                        RELEASE_RESOLUTIONS=( )
+                                                                                        INIT_RESOLUTIONS_=( )
+                                                                                        RELEASE_RESOLUTIONS_=( )
                                                                                         while [[ "$#" -gt 0 ]]
                                                                                         do
                                                                                             case "$1" in
@@ -111,11 +111,11 @@
                                                                                                     shift 2
                                                                                                     ;;
                                                                                                 --init-resolution)
-                                                                                                    INIT_RESOLUTIONS+=( "$2" )
+                                                                                                    INIT_RESOLUTIONS_+=( "$2" )
                                                                                                     shift 2
                                                                                                     ;;
                                                                                                 --release-resolution)
-                                                                                                    RELEASE_RESOLUTIONS+=( "$2" )
+                                                                                                    RELEASE_RESOLUTIONS_+=( "$2" )
                                                                                                     shift 2
                                                                                                     ;;
                                                                                                 --type)
@@ -144,9 +144,9 @@
                                                                                         then
                                                                                             failure d789f6bc
                                                                                         fi
-                                                                                        INIT_RESOLUTIONS_JSON="$( printf '%s\n' "${ builtins.concatStringsSep "" [ "$" "{" "INIT_RESOLUTIONS[@]" "}" ] }" | jq -R . | jq -s . )" || failure f639fb71
+                                                                                        INIT_RESOLUTIONS_JSON="$( printf '%s\n' "${ builtins.concatStringsSep "" [ "$" "{" "INIT_RESOLUTIONS_[@]" "}" ] }" | jq -R . | jq -s . )" || failure f639fb71
                                                                                         export INIT_RESOLUTIONS_JSON
-                                                                                        RELEASE_RESOLUTIONS_JSON="$( printf '%s\n' "${ builtins.concatStringsSep "" [ "$" "{" "RELEASE_RESOLUTIONS[@]" "}" ] }" | jq -R . | jq -s . )" || failure 438779a2
+                                                                                        RELEASE_RESOLUTIONS_JSON="$( printf '%s\n' "${ builtins.concatStringsSep "" [ "$" "{" "RELEASE_RESOLUTIONS_[@]" "}" ] }" | jq -R . | jq -s . )" || failure 438779a2
                                                                                         export RELEASE_RESOLUTIONS_JSON
                                                                                         OUTPUT_TYPE="resolve-$TYPE"
                                                                                         mkdir --parents "${ quarantine-directory }/$INDEX/$TYPE"
