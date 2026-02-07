@@ -94,8 +94,8 @@
                                                                                                             )" || failure 7a875425
                                                                                                             redis-cli PUBLISH ${ channel } "$JSON" > /dev/null
                                                                                                             yq eval --prettyPrint "." - <<< "$JSON"
-                                                                                                            rm --force "${ quarantine-directory }/$INDEX/init/resolve.sh"
-                                                                                                            rm --recursive --force "${ quarantine-directory }/$INDEX/init/resolve"
+                                                                                                            rm --force "${ quarantine-directory }/$INDEX/init/$TYPE.sh"
+                                                                                                            rm --recursive --force "${ quarantine-directory }/$INDEX/init/$TYPE"
                                                                                                         '' ;
                                                                                                 } ;
                                                                                     in "${ application }/bin/resolve" ;
@@ -148,6 +148,7 @@
                                                                                         then
                                                                                             failure d789f6bc
                                                                                         fi
+                                                                                        export TYPE="$TYPE"
                                                                                         export INIT_RESOLUTIONS_JSON="\$INIT_RESOLUTIONS_JSON"
                                                                                         INIT_RESOLUTIONS_JSON_="$( printf '%s\n' "${ builtins.concatStringsSep "" [ "$" "{" "INIT_RESOLUTIONS_[@]" "}" ] }" | jq -R . | jq -s . )" || failure f639fb71
                                                                                         export INIT_RESOLUTIONS_JSON_
