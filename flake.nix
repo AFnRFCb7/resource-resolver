@@ -60,9 +60,9 @@
                                                                                                                 STANDARD_INPUT="$( cat )" || failure b78f1b75
                                                                                                             fi
                                                                                                             # shellcheck disable=SC2153
-                                                                                                            export INIT_RESOLUTIONS_JSON=$INIT_RESOLUTIONS_JSON_
+                                                                                                            export INIT_RESOLUTIONS_JSON='$INIT_RESOLUTIONS_JSON_'
                                                                                                             # shellcheck disable=SC2153
-                                                                                                            export RELEASE_RESOLUTIONS_JSON=$RELEASE_RESOLUTIONS_JSON_
+                                                                                                            export RELEASE_RESOLUTIONS_JSON='$RELEASE_RESOLUTIONS_JSON_'
                                                                                                             export HAS_STANDARD_INPUT
                                                                                                             export STANDARD_INPUT
                                                                                                             export RELEASE
