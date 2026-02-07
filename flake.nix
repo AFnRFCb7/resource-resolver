@@ -153,6 +153,7 @@
                                                                                         export ARGUMENTS_JSON="\$ARGUMENTS_JSON"
                                                                                         export HAS_STANDARD_INPUT="\$HAS_STANDARD_INPUT"
                                                                                         export MODE="\$MODE"
+                                                                                        export JSON="\$JSON"
                                                                                         export STANDARD_INPUT="\$STANDARD_INPUT"
                                                                                         export RELEASE="\$RELEASE"
                                                                                         export INIT_RESOLUTIONS="\$INIT_RESOLUTIONS"
