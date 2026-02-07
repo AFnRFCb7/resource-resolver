@@ -74,6 +74,7 @@
                                                                                                                     --arg HASH "$HASH" \
                                                                                                                     --arg HAS_STANDARD_INPUT "$HAS_STANDARD_INPUT" \
                                                                                                                     --argjson INIT_RESOLUTIONS "$INIT_RESOLUTIONS_JSON" \
+                                                                                                                    --arg RELEASE "$RELEASE" \
                                                                                                                     --argjson RELEASE_RESOLUTIONS "$RELEASE_RESOLUTIONS_JSON" \
                                                                                                                     --arg STANDARD_INPUT "$STANDARD_INPUT" \
                                                                                                                     '
@@ -83,7 +84,7 @@
                                                                                                                             "has-standard-input" : ( $HAS_STANDARD_INPUT | test("true") ) ,
                                                                                                                             "index" : "$INDEX" ,
                                                                                                                             "mode" : ( "$MODE" | test("true") ) ,
-                                                                                                                            "release" : "$RELEASE" ,
+                                                                                                                            "release" : $RELEASE ,
                                                                                                                             "init-resolutions" : $INIT_RESOLUTIONS__ ,
                                                                                                                             "release-resolutions" : $RELEASE_RESOLUTIONS__ ,
                                                                                                                             "resolution" : "$RESOLUTION" ,
@@ -122,6 +123,10 @@
                                                                                                     RELEASE_RESOLUTIONS_+=( "$2" )
                                                                                                     shift 2
                                                                                                     ;;
+                                                                                                --release)
+                                                                                                    RELEASE="$RELEASE"
+                                                                                                    shift 2
+                                                                                                    ;;
                                                                                                 --type)
                                                                                                     TYPE="$2"
                                                                                                     if [[ "$TYPE" != "init" ]] && [[ "$TYPE" != "release" ]]
@@ -148,6 +153,7 @@
                                                                                         then
                                                                                             failure d789f6bc
                                                                                         fi
+                                                                                        export RELEASE="$RELEASE"
                                                                                         export TYPE="$TYPE"
                                                                                         export INIT_RESOLUTIONS_JSON="\$INIT_RESOLUTIONS_JSON"
                                                                                         INIT_RESOLUTIONS_JSON_="$( printf '%s\n' "${ builtins.concatStringsSep "" [ "$" "{" "INIT_RESOLUTIONS_[@]" "}" ] }" | jq -R . | jq -s . )" || failure f639fb71
@@ -213,8 +219,9 @@
                                                                                 do
                                                                                     RELEASE_RESOLUTION_ARGS+=( --release-resolution "$r" )
                                                                                 done
+                                                                                RELEASE="$( yq eval --prettyPrint ".description.secondary.release <<< "$PAYLOAD" )" || failure dca920f6
                                                                                 # shellcheck disable=2068
-                                                                                echo "$PAYLOAD" | iteration --type init --index "$INDEX" --hash "$HASH" ${ builtins.concatStringsSep "" [ "$" "{" "INIT_RESOLUTION_ARGS[@]" "}" ] } ${ builtins.concatStringsSep "" [ "$" "{" "RELEASE_RESOLUTION_ARGS[@]" "}" ] } &
+                                                                                echo "$PAYLOAD" | iteration --type init --index "$INDEX" --hash "$HASH" --release "$RELEASE" ${ builtins.concatStringsSep "" [ "$" "{" "INIT_RESOLUTION_ARGS[@]" "}" ] } ${ builtins.concatStringsSep "" [ "$" "{" "RELEASE_RESOLUTION_ARGS[@]" "}" ] } &
                                                                             elif [[ "invalid-release" == "$TYPE_" ]]
                                                                             then
                                                                                 HASH="$( yq eval ".hash | tostring " - <<< "$PAYLOAD" )" || failure a22f7da7
