@@ -195,7 +195,7 @@
                                                                                 do
                                                                                     RELEASE_RESOLUTION_ARGS+=( --release-resolution "$r" )
                                                                                 done
-                                                                                # shellcheck disable=2086
+                                                                                # shellcheck disable=2068
                                                                                 echo "$PAYLOAD" | iteration --type init --index "$INDEX" --hash "$HASH" ${ builtins.concatStringsSep "" [ "$" "{" "INIT_RESOLUTION_ARGS[@]" "}" ] } ${ builtins.concatStringsSep "" [ "$" "{" "RELEASE_RESOLUTION_ARGS[@]" "}" ] } &
                                                                             elif [[ "invalid-release" == "$TYPE_" ]]
                                                                             then
