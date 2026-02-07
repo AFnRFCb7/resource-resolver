@@ -59,6 +59,8 @@
                                                                                                                 HAS_STANDARD_INPUT=true
                                                                                                                 STANDARD_INPUT="$( cat )" || failure b78f1b75
                                                                                                             fi
+                                                                                                            export INIT_RESOLUTIONS_JSON=$INIT_RESOLUTIONS_JSON_
+                                                                                                            export RELEASE_RESOLUTIONS_JSON=$RELEASE_RESOLUTIONS_JSON_
                                                                                                             export HAS_STANDARD_INPUT
                                                                                                             export STANDARD_INPUT
                                                                                                             export RELEASE
@@ -144,10 +146,12 @@
                                                                                         then
                                                                                             failure d789f6bc
                                                                                         fi
-                                                                                        INIT_RESOLUTIONS_JSON="$( printf '%s\n' "${ builtins.concatStringsSep "" [ "$" "{" "INIT_RESOLUTIONS_[@]" "}" ] }" | jq -R . | jq -s . )" || failure f639fb71
-                                                                                        export INIT_RESOLUTIONS_JSON
-                                                                                        RELEASE_RESOLUTIONS_JSON="$( printf '%s\n' "${ builtins.concatStringsSep "" [ "$" "{" "RELEASE_RESOLUTIONS_[@]" "}" ] }" | jq -R . | jq -s . )" || failure 438779a2
-                                                                                        export RELEASE_RESOLUTIONS_JSON
+                                                                                        export INIT_RESOLUTIONS_JSON="\$INIT_RESOLUTIONS_JSON"
+                                                                                        INIT_RESOLUTIONS_JSON_="$( printf '%s\n' "${ builtins.concatStringsSep "" [ "$" "{" "INIT_RESOLUTIONS_[@]" "}" ] }" | jq -R . | jq -s . )" || failure f639fb71
+                                                                                        export INIT_RESOLUTIONS_JSON_
+                                                                                        export RELEASE_RESOLUTIONS_JSON="\$RELEASE_RESOLUTIONS_JSON"
+                                                                                        RELEASE_RESOLUTIONS_JSON_="$( printf '%s\n' "${ builtins.concatStringsSep "" [ "$" "{" "RELEASE_RESOLUTIONS_[@]" "}" ] }" | jq -R . | jq -s . )" || failure 438779a2
+                                                                                        export RELEASE_RESOLUTIONS_JSON_
                                                                                         OUTPUT_TYPE="resolve-$TYPE"
                                                                                         mkdir --parents "${ quarantine-directory }/$INDEX/$TYPE"
                                                                                         export ARGUMENTS_JSON="\$ARGUMENTS_JSON"
@@ -160,7 +164,7 @@
                                                                                         export RELEASE_RESOLUTIONS="\$RELEASE_RESOLUTIONS"
                                                                                         MODE=false TYPE="$OUTPUT_TYPE" envsubst < ${ resolve } > "${ quarantine-directory }/$INDEX/$TYPE.sh"
                                                                                         chmod 0500 "${ quarantine-directory }/$INDEX/$TYPE.sh"
-                                                                                        for RESOLUTION in "${ builtins.concatStringsSep "" [ "$" "{" "INIT_RESOLUTIONS_[@]" "}" ] }"
+                                                                                        for RESOLUTION in "${ builtins.concatStringsSep "" [ "$" "{" "INIT_RESOLUTIONS_[@]_" "}" ] }"
                                                                                         do
                                                                                             MODE=true RESOLUTION=$RESOLUTION TYPE="$OUTPUT_TYPE" envsubst < ${ resolve } > "${ quarantine-directory }/$INDEX/$TYPE/$RESOLUTION"
                                                                                             chmod 0500 "${ quarantine-directory }/$INDEX/$TYPE/$RESOLUTION"
