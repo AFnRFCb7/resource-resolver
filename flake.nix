@@ -159,6 +159,7 @@
                                                                                         OUTPUT_TYPE="resolve-$TYPE"
                                                                                         mkdir --parents "${ quarantine-directory }/$INDEX/$TYPE"
                                                                                         export ARGUMENTS_JSON="\$ARGUMENTS_JSON"
+                                                                                        export ARGUMENTS="\$ARGUMENTS"
                                                                                         export HAS_STANDARD_INPUT="\$HAS_STANDARD_INPUT"
                                                                                         export MODE="\$MODE"
                                                                                         export JSON="\$JSON"
