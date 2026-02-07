@@ -160,8 +160,10 @@
                                                                                         export JSON="\$JSON"
                                                                                         export STANDARD_INPUT="\$STANDARD_INPUT"
                                                                                         export RELEASE="\$RELEASE"
-                                                                                        export INIT_RESOLUTIONS="\$INIT_RESOLUTIONS"
-                                                                                        export RELEASE_RESOLUTIONS="\$RELEASE_RESOLUTIONS"
+                                                                                        : ${ builtins.concatStringsSep "" [ "$" "{" "INIT_RESOLUTIONS_?:The value has been exported" "}" ] }
+                                                                                        export INIT_RESOLUTIONS="\$INIT_RESOLUTIONS_"
+                                                                                        : ${ builtins.concatStringsSep "" [ "$" "{" "RELEASE_RESOLUTIONS_?:The value has been exported" "}" ] }
+                                                                                        export RELEASE_RESOLUTIONS="\$RELEASE_RESOLUTIONS_"
                                                                                         MODE=false TYPE="$OUTPUT_TYPE" envsubst < ${ resolve } > "${ quarantine-directory }/$INDEX/$TYPE.sh"
                                                                                         chmod 0500 "${ quarantine-directory }/$INDEX/$TYPE.sh"
                                                                                         for RESOLUTION in "${ builtins.concatStringsSep "" [ "$" "{" "INIT_RESOLUTIONS_[@]_" "}" ] }"
