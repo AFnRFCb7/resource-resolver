@@ -59,7 +59,9 @@
                                                                                                                 HAS_STANDARD_INPUT=true
                                                                                                                 STANDARD_INPUT="$( cat )" || failure b78f1b75
                                                                                                             fi
+                                                                                                            # shellcheck disable=SC2153
                                                                                                             export INIT_RESOLUTIONS_JSON=$INIT_RESOLUTIONS_JSON_
+                                                                                                            # shellcheck disable=SC2153
                                                                                                             export RELEASE_RESOLUTIONS_JSON=$RELEASE_RESOLUTIONS_JSON_
                                                                                                             export HAS_STANDARD_INPUT
                                                                                                             export STANDARD_INPUT
@@ -160,9 +162,7 @@
                                                                                         export JSON="\$JSON"
                                                                                         export STANDARD_INPUT="\$STANDARD_INPUT"
                                                                                         export RELEASE="\$RELEASE"
-                                                                                        : ${ builtins.concatStringsSep "" [ "$" "{" "INIT_RESOLUTIONS_?:The value has been exported" "}" ] }
                                                                                         export INIT_RESOLUTIONS="\$INIT_RESOLUTIONS_"
-                                                                                        : ${ builtins.concatStringsSep "" [ "$" "{" "RELEASE_RESOLUTIONS_?:The value has been exported" "}" ] }
                                                                                         export RELEASE_RESOLUTIONS="\$RELEASE_RESOLUTIONS_"
                                                                                         MODE=false TYPE="$OUTPUT_TYPE" envsubst < ${ resolve } > "${ quarantine-directory }/$INDEX/$TYPE.sh"
                                                                                         chmod 0500 "${ quarantine-directory }/$INDEX/$TYPE.sh"
