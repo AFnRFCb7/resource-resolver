@@ -217,7 +217,7 @@
                                                                                 )
                                                                                 for r in "${ builtins.concatStringsSep "" [ "$" "{" "RELEASE_RESOLUTIONS[@]" "}" ] }"
                                                                                 do
-                                                                                    RELEASE_RESOLUTION_ARGS+=( --release-resolution "$r" )p
+                                                                                    RELEASE_RESOLUTION_ARGS+=( --release-resolution "$r" )
                                                                                 done"invalid-init
                                                                                 RELEASE="$( yq eval --prettyPrint ".description.secondary.release <<< "$PAYLOAD" )" || failure dca920f6
                                                                                 iteration --type init --index "$INDEX" --hash "$HASH" --release "$RELEASE" ${ builtins.concatStringsSep "" [ "$" "{" "INIT_RESOLUTION_ARGS[@]" "}" ] } ${ builtins.concatStringsSep "" [ "$" "{" "RELEASE_RESOLUTION_ARGS[@]" "}" ] } <<< "$PAYLOAD" &
@@ -234,7 +234,7 @@
                                                                                     RELEASE_RESOLUTION_ARGS+=( --release-resolution "$r" )
                                                                                 done
                                                                                 # shellcheck disable=2086
-                                                                                echo "$PAYLOAD" | iteration --type release --index "$INDEX" --hash "$HASH" "${ builtins.concatStringsSep "" [ "$" "{" "RELEASE_RESOLUTION_ARGS[@]" "}" ] }" &
+                                                                                iteration --type release --index "$INDEX" --hash "$HASH" "${ builtins.concatStringsSep "" [ "$" "{" "RELEASE_RESOLUTION_ARGS[@]" "}" ] }" <<< "$PAYLOAD" &
                                                                             else
                                                                                 echo "releaser ignores $TYPE_"
                                                                             fi
