@@ -171,7 +171,7 @@
                                                                                         export MODE="\$MODE"
                                                                                         export JSON="\$JSON"
                                                                                         export STANDARD_INPUT="\$STANDARD_INPUT"
-                                                                                        export RELEASE="\$RELEASE"
+                                                                                        export RELEASE="$RELEASE"
                                                                                         export INIT_RESOLUTIONS="\$INIT_RESOLUTIONS_"
                                                                                         export RELEASE_RESOLUTIONS="\$RELEASE_RESOLUTIONS_"
                                                                                         MODE=false TYPE="$OUTPUT_TYPE" envsubst < ${ resolve } > "${ quarantine-directory }/$INDEX/$TYPE.sh"
