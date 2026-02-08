@@ -172,7 +172,7 @@
                                                                                         export MODE="\$MODE"
                                                                                         export JSON="\$JSON"
                                                                                         export STANDARD_INPUT="\$STANDARD_INPUT"
-                                                                                        if [[ -n "$RELEASE_SET" ]]
+                                                                                        if "$RELEASE_SET"
                                                                                         then
                                                                                             export RELEASE="$RELEASE"
                                                                                         fi
