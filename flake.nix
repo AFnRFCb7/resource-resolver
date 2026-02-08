@@ -171,7 +171,7 @@
                                                                                         export MODE="\$MODE"
                                                                                         export JSON="\$JSON"
                                                                                         export STANDARD_INPUT="\$STANDARD_INPUT"
-                                                                                        if [[ ! -z "$RELEASE" ]]
+                                                                                        if [[ -n "$RELEASE" ]]
                                                                                         then
                                                                                             export RELEASE="$RELEASE"
                                                                                         fi
