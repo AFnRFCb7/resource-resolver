@@ -104,6 +104,7 @@
                                                                                     ''
                                                                                         INIT_RESOLUTIONS_=( )
                                                                                         RELEASE_RESOLUTIONS_=( )
+                                                                                        RELEASE_SET=false
                                                                                         while [[ "$#" -gt 0 ]]
                                                                                         do
                                                                                             case "$1" in
@@ -125,6 +126,7 @@
                                                                                                     ;;
                                                                                                 --release)
                                                                                                     RELEASE="$2"
+                                                                                                    RELEASE_SET=true
                                                                                                     shift 2
                                                                                                     ;;
                                                                                                 --type)
@@ -153,7 +155,6 @@
                                                                                         then
                                                                                             failure d789f6bc
                                                                                         fi
-                                                                                        export RELEASE
                                                                                         export TYPE="$TYPE"
                                                                                         export INIT_RESOLUTIONS_JSON="\$INIT_RESOLUTIONS_JSON"
                                                                                         INIT_RESOLUTIONS_JSON_="$( printf '%s\n' "${ builtins.concatStringsSep "" [ "$" "{" "INIT_RESOLUTIONS_[@]" "}" ] }" | jq -R . | jq -s . )" || failure f639fb71
@@ -171,12 +172,13 @@
                                                                                         export MODE="\$MODE"
                                                                                         export JSON="\$JSON"
                                                                                         export STANDARD_INPUT="\$STANDARD_INPUT"
-                                                                                        if [[ -n "$RELEASE" ]]
+                                                                                        if [[ -n "$RELEASE_SET" ]]
                                                                                         then
                                                                                             export RELEASE="$RELEASE"
                                                                                         fi
                                                                                         export INIT_RESOLUTIONS="\$INIT_RESOLUTIONS_"
                                                                                         export RELEASE_RESOLUTIONS="\$RELEASE_RESOLUTIONS_"
+                                                                                        export RELEASE_SET="\$RELEASE_SET"
                                                                                         MODE=false TYPE="$OUTPUT_TYPE" envsubst < ${ resolve } > "${ quarantine-directory }/$INDEX/$TYPE.sh"
                                                                                         chmod 0500 "${ quarantine-directory }/$INDEX/$TYPE.sh"
                                                                                         for RESOLUTION in "${ builtins.concatStringsSep "" [ "$" "{" "INIT_RESOLUTIONS_[@]" "}" ] }"
