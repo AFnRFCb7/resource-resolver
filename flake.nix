@@ -220,6 +220,7 @@
                                                                                     RELEASE_RESOLUTION_ARGS+=( --release-resolution "$r" )
                                                                                 done
                                                                                 RELEASE="$( yq eval --prettyPrint ".description.secondary.release" <<< "$PAYLOAD" )" || failure dca920f6
+                                                                                # shellcheck disable=2086
                                                                                 iteration --type init --index "$INDEX" --hash "$HASH" --release "$RELEASE" ${ builtins.concatStringsSep "" [ "$" "{" "INIT_RESOLUTION_ARGS[@]" "}" ] } ${ builtins.concatStringsSep "" [ "$" "{" "RELEASE_RESOLUTION_ARGS[@]" "}" ] } <<< "$PAYLOAD" &
                                                                             elif [[ "invalid-release" == "$TYPE_" ]]
                                                                             then
