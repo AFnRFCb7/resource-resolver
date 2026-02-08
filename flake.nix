@@ -217,11 +217,12 @@
                                                                                 )
                                                                                 for r in "${ builtins.concatStringsSep "" [ "$" "{" "RELEASE_RESOLUTIONS[@]" "}" ] }"
                                                                                 do
-                                                                                    RELEASE_RESOLUTION_ARGS+=( --release-resolution "$r" )
-                                                                                done
+                                                                                    RELEASE_RESOLUTION_ARGS+=( --release-resolution "$r" )p
+                                                                                done"invalid-init
                                                                                 RELEASE="$( yq eval --prettyPrint ".description.secondary.release <<< "$PAYLOAD" )" || failure dca920f6
                                                                                 # shellcheck disable=2068
                                                                                 echo "$PAYLOAD" | iteration --type init --index "$INDEX" --hash "$HASH" --release "$RELEASE" ${ builtins.concatStringsSep "" [ "$" "{" "INIT_RESOLUTION_ARGS[@]" "}" ] } ${ builtins.concatStringsSep "" [ "$" "{" "RELEASE_RESOLUTION_ARGS[@]" "}" ] } &
+                                                                                true
                                                                             elif [[ "invalid-release" == "$TYPE_" ]]
                                                                             then
                                                                                 HASH="$( yq eval ".hash | tostring " - <<< "$PAYLOAD" )" || failure a22f7da7
