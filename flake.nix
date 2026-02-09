@@ -65,7 +65,12 @@
                                                                                                             export RELEASE_RESOLUTIONS_JSON='$RELEASE_RESOLUTIONS_JSON_'
                                                                                                             export HAS_STANDARD_INPUT
                                                                                                             export STANDARD_INPUT
-                                                                                                            export RELEASE
+                                                                                                            if $RELEASE_SET
+                                                                                                            then
+                                                                                                                export RELEASE
+                                                                                                            else
+                                                                                                                export RELEASE=""
+                                                                                                            fi
                                                                                                             JSON="$(
                                                                                                                 jq \
                                                                                                                     --null-input \
@@ -172,6 +177,7 @@
                                                                                         export MODE="\$MODE"
                                                                                         export JSON="\$JSON"
                                                                                         export STANDARD_INPUT="\$STANDARD_INPUT"
+                                                                                        export RELEASE_SET
                                                                                         if "$RELEASE_SET"
                                                                                         then
                                                                                             export RELEASE="$RELEASE"
