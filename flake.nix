@@ -76,7 +76,6 @@
                                                                                                                     --null-input \
                                                                                                                     --compact-output \
                                                                                                                     --argjson ARGUMENTS "$ARGUMENTS_JSON" \
-                                                                                                                    --arg HASH "$HASH" \
                                                                                                                     --arg HAS_STANDARD_INPUT "$HAS_STANDARD_INPUT" \
                                                                                                                     --argjson INIT_RESOLUTIONS "$INIT_RESOLUTIONS_JSON" \
                                                                                                                     --arg RELEASE "$RELEASE" \
@@ -85,7 +84,7 @@
                                                                                                                     '
                                                                                                                         {
                                                                                                                             "arguments" : $ARGUMENTS ,
-                                                                                                                            "hash" : $HASH ,
+                                                                                                                            "hash" : "$HASH" ,
                                                                                                                             "has-standard-input" : ( $HAS_STANDARD_INPUT | test("true") ) ,
                                                                                                                             "index" : "$INDEX" ,
                                                                                                                             "mode" : ( "$MODE" | test("true") ) ,
