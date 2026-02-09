@@ -176,7 +176,7 @@
                                                                                         then
                                                                                             export RELEASE="$RELEASE"
                                                                                         else
-                                                                                            export RELEASE=""
+                                                                                            export RELEASE="\$RELEASE"
                                                                                         fi
                                                                                         export INIT_RESOLUTIONS="\$INIT_RESOLUTIONS_"
                                                                                         export RELEASE_RESOLUTIONS="\$RELEASE_RESOLUTIONS_"
