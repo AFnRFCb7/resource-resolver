@@ -183,8 +183,16 @@
                                                                                         export RELEASE_SET="\$RELEASE_SET"
                                                                                         MODE=false TYPE="$OUTPUT_TYPE" envsubst < ${ resolve } > "${ quarantine-directory }/$INDEX/$TYPE.sh"
                                                                                         chmod 0500 "${ quarantine-directory }/$INDEX/$TYPE.sh"
+                                                                                        echo 2f66e497
                                                                                         for RESOLUTION in "${ builtins.concatStringsSep "" [ "$" "{" "INIT_RESOLUTIONS_[@]" "}" ] }"
                                                                                         do
+                                                                                            echo 34d5c82f "$RESOLUTION=$RESOLUTION"
+                                                                                            MODE=true RESOLUTION=$RESOLUTION TYPE="$OUTPUT_TYPE" envsubst < ${ resolve } > "${ quarantine-directory }/$INDEX/$TYPE/$RESOLUTION"
+                                                                                            chmod 0500 "${ quarantine-directory }/$INDEX/$TYPE/$RESOLUTION"
+                                                                                        done
+                                                                                        for RESOLUTION in "${ builtins.concatStringsSep "" [ "$" "{" "RELEASE_RESOLUTIONS_[@]" "}" ] }"
+                                                                                        do
+                                                                                            echo 0f3c243b "$RESOLUTION=$RESOLUTION"
                                                                                             MODE=true RESOLUTION=$RESOLUTION TYPE="$OUTPUT_TYPE" envsubst < ${ resolve } > "${ quarantine-directory }/$INDEX/$TYPE/$RESOLUTION"
                                                                                             chmod 0500 "${ quarantine-directory }/$INDEX/$TYPE/$RESOLUTION"
                                                                                         done
